@@ -1,12 +1,9 @@
 "use strict";
 
 var vertexShaderSource = `#version 300 es
-
 in vec4 a_position;
 in vec4 a_color;
-
 uniform mat4 u_matrix;
-
 out vec4 v_color;
 
 void main() {
@@ -16,11 +13,8 @@ void main() {
 `;
 
 var fragmentShaderSource = `#version 300 es
-
 precision highp float;
-
 in vec4 v_color;
-
 out vec4 outColor;
 
 void main() {
@@ -35,12 +29,11 @@ function main() {
     return;
   }
 
-  var program = webglUtils.createProgramFromSources(gl, [
-    vertexShaderSource,
-    fragmentShaderSource,
-  ]);
+  var program = webglUtils.createProgramFromSources(gl, 
+    [vertexShaderSource, fragmentShaderSource]);
   var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-  var colorAttributeLocation = gl.getUniformLocation(program, "a_color");
+  var colorAttributeLocation    = gl.getAttribLocation(program, "a_color");
+
   var matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
   var positionBuffer = gl.createBuffer();
@@ -66,7 +59,9 @@ function main() {
   var colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   setColors(gl);
+
   gl.enableVertexAttribArray(colorAttributeLocation);
+
   var size = 3;
   var type = gl.UNSIGNED_BYTE;
   var normalize = true;
@@ -95,71 +90,26 @@ function main() {
 
   drawScene();
 
-  // Set up a UI
-  webglLessonsUI.setupSlider("#x", {
-    value: translation[0],
-    slide: updatePosition(0),
-    max: gl.canvas.width,
-  });
-  webglLessonsUI.setupSlider("#y", {
-    value: translation[1],
-    slide: updatePosition(1),
-    max: gl.canvas.height,
-  });
-  webglLessonsUI.setupSlider("#z", {
-    value: translation[2],
-    slide: updatePosition(2),
-    max: gl.canvas.height,
-  });
-  webglLessonsUI.setupSlider("angleX", {
-    value: radToDeg(rotation[0]),
-    slide: updateRotation(0),
-    max: 360,
-  });
-  webglLessonsUI.setupSlider("angleY", {
-    value: radToDeg(rotation[1]),
-    slide: updateRotation(1),
-    max: 360,
-  });
-  webglLessonsUI.setupSlider("angleZ", {
-    value: radToDeg(rotation[2]),
-    slide: updateRotation(2),
-    max: 360,
-  });
-  webglLessonsUI.setupSlider("#scaleX", {
-    value: scale[0],
-    slide: updateScale(0),
-    min: -5,
-    max: 5,
-    step: 0.01,
-    precision: 2,
-  });
-  webglLessonsUI.setupSlider("#scaleY", {
-    value: scale[1],
-    slide: updateScale(1),
-    min: -5,
-    max: 5,
-    step: 0.01,
-    precision: 2,
-  });
-  webglLessonsUI.setupSlider("#scaleZ", {
-    value: scale[2],
-    slide: updateScale(2),
-    min: -5,
-    max: 5,
-    step: 0.01,
-    precision: 2,
-  });
+  // Setup a ui.
+  webglLessonsUI.setupSlider("#x",      {value: translation[0], slide: updatePosition(0), max: gl.canvas.width });
+  webglLessonsUI.setupSlider("#y",      {value: translation[1], slide: updatePosition(1), max: gl.canvas.height});
+  webglLessonsUI.setupSlider("#z",      {value: translation[2], slide: updatePosition(2), max: gl.canvas.height});
+  webglLessonsUI.setupSlider("#angleX", {value: radToDeg(rotation[0]), slide: updateRotation(0), max: 360});
+  webglLessonsUI.setupSlider("#angleY", {value: radToDeg(rotation[1]), slide: updateRotation(1), max: 360});
+  webglLessonsUI.setupSlider("#angleZ", {value: radToDeg(rotation[2]), slide: updateRotation(2), max: 360});
+  webglLessonsUI.setupSlider("#scaleX", {value: scale[0], slide: updateScale(0), min: -5, max: 5, step: 0.01, precision: 2});
+  webglLessonsUI.setupSlider("#scaleY", {value: scale[1], slide: updateScale(1), min: -5, max: 5, step: 0.01, precision: 2});
+  webglLessonsUI.setupSlider("#scaleZ", {value: scale[2], slide: updateScale(2), min: -5, max: 5, step: 0.01, precision: 2});
 
   function updatePosition(index) {
-    return function (event, ui) {
+    return function(event, ui) {
       translation[index] = ui.value;
       drawScene();
     };
   }
 
   function updateRotation(index) {
-    return function (event, ui) {
+    return function(event, ui) {
       var angleInDegrees = ui.value;
       var angleInRadians = degToRad(angleInDegrees);
       rotation[index] = angleInRadians;
@@ -168,7 +118,7 @@ function main() {
   }
 
   function updateScale(index) {
-    return function (event, ui) {
+    return function(event, ui) {
       scale[index] = ui.value;
       drawScene();
     };
@@ -200,12 +150,7 @@ function main() {
       gl.canvas.clientHeight,
       400,
     );
-    matrix = m4.translate(
-      matrix,
-      translation[0],
-      translation[1],
-      translation[2],
-    );
+    matrix = m4.translate(matrix, translation[0], translation[1], translation[2]);
     matrix = m4.xRotate(matrix, rotation[0]);
     matrix = m4.yRotate(matrix, rotation[1]);
     matrix = m4.zRotate(matrix, rotation[2]);
@@ -221,61 +166,141 @@ function main() {
   }
 }
 
+
 // Fill the current ARRAY_BUFFER with values that define a letter 'F'
 function setGeometry(gl) {
   gl.bufferData(
     gl.ARRAY_BUFFER,
     new Float32Array([
       // left column front
-      0, 0, 0, 0, 150, 0, 30, 0, 0, 0, 150, 0, 30, 150, 0, 30, 0, 0,
+          0,   0,  0,
+          0, 150,  0,
+          30,   0,  0,
+          0, 150,  0,
+          30, 150,  0,
+          30,   0,  0,
 
-      // top rung front
-      30, 0, 0, 30, 30, 0, 100, 0, 0, 30, 30, 0, 100, 30, 0, 100, 0, 0,
+          // top rung front
+          30,   0,  0,
+          30,  30,  0,
+          100,   0,  0,
+          30,  30,  0,
+          100,  30,  0,
+          100,   0,  0,
 
-      // middle rung front
-      30, 60, 0, 30, 90, 0, 67, 60, 0, 30, 90, 0, 67, 90, 0, 67, 60, 0,
+          // middle rung front
+          30,  60,  0,
+          30,  90,  0,
+          67,  60,  0,
+          30,  90,  0,
+          67,  90,  0,
+          67,  60,  0,
 
-      // left column back
-      0, 0, 30, 30, 0, 30, 0, 150, 30, 0, 150, 30, 30, 0, 30, 30, 150, 30,
+          // left column back
+            0,   0,  30,
+           30,   0,  30,
+            0, 150,  30,
+            0, 150,  30,
+           30,   0,  30,
+           30, 150,  30,
 
-      // top rung back
-      30, 0, 30, 100, 0, 30, 30, 30, 30, 30, 30, 30, 100, 0, 30, 100, 30, 30,
+          // top rung back
+           30,   0,  30,
+          100,   0,  30,
+           30,  30,  30,
+           30,  30,  30,
+          100,   0,  30,
+          100,  30,  30,
 
-      // middle rung back
-      30, 60, 30, 67, 60, 30, 30, 90, 30, 30, 90, 30, 67, 60, 30, 67, 90, 30,
+          // middle rung back
+           30,  60,  30,
+           67,  60,  30,
+           30,  90,  30,
+           30,  90,  30,
+           67,  60,  30,
+           67,  90,  30,
 
-      // top
-      0, 0, 0, 100, 0, 0, 100, 0, 30, 0, 0, 0, 100, 0, 30, 0, 0, 30,
+          // top
+            0,   0,   0,
+          100,   0,   0,
+          100,   0,  30,
+            0,   0,   0,
+          100,   0,  30,
+            0,   0,  30,
 
-      // top rung right
-      100, 0, 0, 100, 30, 0, 100, 30, 30, 100, 0, 0, 100, 30, 30, 100, 0, 30,
+          // top rung right
+          100,   0,   0,
+          100,  30,   0,
+          100,  30,  30,
+          100,   0,   0,
+          100,  30,  30,
+          100,   0,  30,
 
-      // under top rung
-      30, 30, 0, 30, 30, 30, 100, 30, 30, 30, 30, 0, 100, 30, 30, 100, 30, 0,
+          // under top rung
+          30,   30,   0,
+          30,   30,  30,
+          100,  30,  30,
+          30,   30,   0,
+          100,  30,  30,
+          100,  30,   0,
 
-      // between top rung and middle
-      30, 30, 0, 30, 60, 30, 30, 30, 30, 30, 30, 0, 30, 60, 0, 30, 60, 30,
+          // between top rung and middle
+          30,   30,   0,
+          30,   60,  30,
+          30,   30,  30,
+          30,   30,   0,
+          30,   60,   0,
+          30,   60,  30,
 
-      // top of middle rung
-      30, 60, 0, 67, 60, 30, 30, 60, 30, 30, 60, 0, 67, 60, 0, 67, 60, 30,
+          // top of middle rung
+          30,   60,   0,
+          67,   60,  30,
+          30,   60,  30,
+          30,   60,   0,
+          67,   60,   0,
+          67,   60,  30,
 
-      // right of middle rung
-      67, 60, 0, 67, 90, 30, 67, 60, 30, 67, 60, 0, 67, 90, 0, 67, 90, 30,
+          // right of middle rung
+          67,   60,   0,
+          67,   90,  30,
+          67,   60,  30,
+          67,   60,   0,
+          67,   90,   0,
+          67,   90,  30,
 
-      // bottom of middle rung.
-      30, 90, 0, 30, 90, 30, 67, 90, 30, 30, 90, 0, 67, 90, 30, 67, 90, 0,
+          // bottom of middle rung.
+          30,   90,   0,
+          30,   90,  30,
+          67,   90,  30,
+          30,   90,   0,
+          67,   90,  30,
+          67,   90,   0,
 
-      // right of bottom
-      30, 90, 0, 30, 150, 30, 30, 90, 30, 30, 90, 0, 30, 150, 0, 30, 150, 30,
+          // right of bottom
+          30,   90,   0,
+          30,  150,  30,
+          30,   90,  30,
+          30,   90,   0,
+          30,  150,   0,
+          30,  150,  30,
 
-      // bottom
-      0, 150, 0, 0, 150, 30, 30, 150, 30, 0, 150, 0, 30, 150, 30, 30, 150, 0,
+          // bottom
+          0,   150,   0,
+          0,   150,  30,
+          30,  150,  30,
+          0,   150,   0,
+          30,  150,  30,
+          30,  150,   0,
 
-      // left side
-      0, 0, 0, 0, 0, 30, 0, 150, 30, 0, 0, 0, 0, 150, 30, 0, 150, 0,
+          // left side
+          0,   0,   0,
+          0,   0,  30,
+          0, 150,  30,
+          0,   0,   0,
+          0, 150,  30,
+          0, 150,   0,
     ]),
-    gl.STATIC_DRAW,
-  );
+    gl.STATIC_DRAW);
 }
 
 // Fill the current ARRAY_BUFFER with colors for the 'F'
@@ -283,94 +308,145 @@ function setColors(gl) {
   gl.bufferData(
     gl.ARRAY_BUFFER,
     new Uint8Array([
-      // left column front
-      200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200,
-      70, 120,
+       // left column front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
 
-      // top rung front
-      200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200,
-      70, 120,
+          // top rung front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
 
-      // middle rung front
-      200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200, 70, 120, 200,
-      70, 120,
+          // middle rung front
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
+        200,  70, 120,
 
-      // left column back
-      80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70,
-      200,
+          // left column back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
 
-      // top rung back
-      80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70,
-      200,
+          // top rung back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
 
-      // middle rung back
-      80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70, 200, 80, 70,
-      200,
+          // middle rung back
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
+        80, 70, 200,
 
-      // top
-      70, 200, 210, 70, 200, 210, 70, 200, 210, 70, 200, 210, 70, 200, 210, 70,
-      200, 210,
+          // top
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
+        70, 200, 210,
 
-      // top rung right
-      200, 200, 70, 200, 200, 70, 200, 200, 70, 200, 200, 70, 200, 200, 70, 200,
-      200, 70,
+          // top rung right
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
+        200, 200, 70,
 
-      // under top rung
-      210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210,
-      100, 70,
+          // under top rung
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
+        210, 100, 70,
 
-      // between top rung and middle
-      210, 160, 70, 210, 160, 70, 210, 160, 70, 210, 160, 70, 210, 160, 70, 210,
-      160, 70,
+          // between top rung and middle
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
+        210, 160, 70,
 
-      // top of middle rung
-      70, 180, 210, 70, 180, 210, 70, 180, 210, 70, 180, 210, 70, 180, 210, 70,
-      180, 210,
+          // top of middle rung
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
+        70, 180, 210,
 
-      // right of middle rung
-      100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100, 70, 210, 100,
-      70, 210,
+          // right of middle rung
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
+        100, 70, 210,
 
-      // bottom of middle rung.
-      76, 210, 100, 76, 210, 100, 76, 210, 100, 76, 210, 100, 76, 210, 100, 76,
-      210, 100,
+          // bottom of middle rung.
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
+        76, 210, 100,
 
-      // right of bottom
-      140, 210, 80, 140, 210, 80, 140, 210, 80, 140, 210, 80, 140, 210, 80, 140,
-      210, 80,
+          // right of bottom
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
+        140, 210, 80,
 
-      // bottom
-      90, 130, 110, 90, 130, 110, 90, 130, 110, 90, 130, 110, 90, 130, 110, 90,
-      130, 110,
+          // bottom
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
+        90, 130, 110,
 
-      // left side
-      160, 160, 220, 160, 160, 220, 160, 160, 220, 160, 160, 220, 160, 160, 220,
-      160, 160, 220,
+          // left side
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
+        160, 160, 220,
     ]),
-    gl.STATIC_DRAW,
-  );
+    gl.STATIC_DRAW);
 }
 
 var m4 = {
   projection: function (width, height, depth) {
     // Flips the Y-axis so 0 is at the top
     return [
-      2 / width,
-      0,
-      0,
-      0,
-      0,
-      -2 / height,
-      0,
-      0,
-      0,
-      0,
-      2 / depth,
-      0,
-      -1,
-      1,
-      0,
-      1,
+      2 / width, 0, 0, 0,
+       0, -2 / height, 0, 0,
+       0, 0, 2 / depth, 0,
+      -1, 1, 0, 1,
     ];
   },
 
@@ -425,10 +501,10 @@ var m4 = {
       b20 * a02 + b21 * a12 + b22 * a22 + b23 * a32,
       b20 * a03 + b21 * a13 + b22 * a23 + b23 * a33,
 
-      b30 * a00 + b31 * a10 + b32 * a20 + b23 * a30,
-      b30 * a01 + b31 * a11 + b32 * a21 + b23 * a31,
-      b30 * a02 + b31 * a12 + b32 * a22 + b23 * a32,
-      b30 * a03 + b31 * a13 + b32 * a23 + b23 * a33
+      b30 * a00 + b31 * a10 + b32 * a20 + b33 * a30,
+      b30 * a01 + b31 * a11 + b32 * a21 + b33 * a31,
+      b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32,
+      b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33
     ];
   },
 
