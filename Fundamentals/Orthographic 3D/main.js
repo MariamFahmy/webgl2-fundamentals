@@ -111,22 +111,22 @@ function main() {
     slide: updatePosition(2),
     max: gl.canvas.height,
   });
-  webglLessonsUI.setUpSlider("angleX", {
+  webglLessonsUI.setupSlider("angleX", {
     value: radToDeg(rotation[0]),
     slide: updateRotation(0),
     max: 360,
   });
-  webglLessonsUI.setUpSlider("angleY", {
+  webglLessonsUI.setupSlider("angleY", {
     value: radToDeg(rotation[1]),
     slide: updateRotation(1),
     max: 360,
   });
-  webglLessonsUI.setUpSlider("angleZ", {
+  webglLessonsUI.setupSlider("angleZ", {
     value: radToDeg(rotation[2]),
     slide: updateRotation(2),
     max: 360,
   });
-  webglLessonsUI.setUpSlider("#scaleX", {
+  webglLessonsUI.setupSlider("#scaleX", {
     value: scale[0],
     slide: updateScale(0),
     min: -5,
@@ -134,7 +134,7 @@ function main() {
     step: 0.01,
     precision: 2,
   });
-  webglLessonsUI.setUpSlider("#scaleY", {
+  webglLessonsUI.setupSlider("#scaleY", {
     value: scale[1],
     slide: updateScale(1),
     min: -5,
@@ -142,7 +142,7 @@ function main() {
     step: 0.01,
     precision: 2,
   });
-  webglLessonsUI.setUpSlider("#scaleZ", {
+  webglLessonsUI.setupSlider("#scaleZ", {
     value: scale[2],
     slide: updateScale(2),
     min: -5,
@@ -495,11 +495,11 @@ var m4 = {
   },
 
   yRotate: function(m, angleInRadians) {
-    return m4.multiply(m, m.yRotation(angleInRadians));
+    return m4.multiply(m, m4.yRotation(angleInRadians));
   },
 
   zRotate: function(m, angleInRadians) {
-    return m4.multiply(m, m.zRotation(angleInRadians));
+    return m4.multiply(m, m4.zRotation(angleInRadians));
   },
 
   scale: function(m, sx, sy, sz) {
